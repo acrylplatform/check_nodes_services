@@ -97,9 +97,13 @@
             });
 
         });
-    $.getJSON('https://api.ipify.org?format=json', function(data) {
-        $('[name=ip_address]').val(data.ip);
-    });
+    fetch('https://api.ipify.org?format=json')
+     .then(response => response.json())
+     .then(commits => $('[name=ip_address]').val(commits.ip));
+
+    // $.getJSON('https://api.ipify.org?format=json', function(data) {
+    //     $('[name=ip_address]').val(data.ip);
+    // });
     });
     </script>
 </body>
