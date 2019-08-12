@@ -1,2 +1,2 @@
-# check_nodes_services
+# check nodes service
 Frontend for check nodes service
