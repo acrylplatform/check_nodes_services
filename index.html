@@ -1,0 +1,101 @@
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>Acryl Node Checker</title>
+
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
+    <script
+			  src="https://code.jquery.com/jquery-3.3.1.min.js"
+			  integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="
+			  crossorigin="anonymous"></script>
+</head>
+
+<body class="align">
+
+  <div class="grid">
+    <div class="logo-and-text">
+      <img src="img/acryl-2.png" alt="acryl logo">
+      <div id="acryl-text">Acryl Node Checker</div>
+    </div>
+    <form action="https://checknode.acrylminer.com/get" method="get" class="search" id="queryForm">
+
+      <div class="form__field">
+        <input type="search" name="ip_address" placeholder="IP address" class="form__input">
+        <input type="submit" value="Check" class="button">
+      </div>
+
+    </form>
+    <div id="preloader">
+      Please wait...
+    </div>
+    <div class="result">
+        <div id="online">Online: <span id="online_number"></span></div>
+        <div>Nodes: <span id="nodes"></span></div>
+        <div>Last seen: <span id="last_seen"></span></div>
+    </div>
+    <div class="errors">Request error. Please try again later</div>
+  </div>
+<script>
+    $(function () {
+        var result_div = $(".result");
+        var error_div =  $(".errors");
+        $("#queryForm").submit(function(event) {
+            event.preventDefault();
+
+            var $form = $(this);
+            var ip_address = $form.find('input[name="ip_address"]').val();
+            var url = $form.attr('action') + '/' + ip_address;
+
+            var request = $.ajax({
+              url: url,
+              beforeSend: function() {
+                  $('#preloader').fadeIn(1000);
+              },
+              complete: function() {
+                  $('#preloader').hide();
+              }
+            });
+
+            request.done(function(data) {
+                result_div.fadeIn(1000);
+                var last_seen_date = $("#last_seen");
+                last_seen_date.empty();
+                var online_number = $("#online_number");
+                online_number.empty();
+                var nodes_div = $("#nodes");
+                nodes_div.empty();
+                if (data["nodes"].length === 0) {
+                  online_number.text("0");
+                  if (!data["last_seen"]) {
+                    last_seen_date.text("Never");
+                    nodes_div.html("Not found. <a href='https://shop.acrylminer.com/?utm_source=checknodes' target='_blank'><b>Buy Acryl Node</b></a>");
+                  } else {
+                    last_seen_date.text(data["last_seen"]);
+                  }
+
+                } else {
+                    online_number.text(data["nodes"].length);
+                    var node_list = $('<ul id="nodes_list"/>');
+                    $.each(data["nodes"], function (node) {
+                          node_list.append($('<li/>').text($(this)[0]["node_address"]));
+                        }
+                    );
+                    nodes_div.append(node_list);
+                    last_seen_date.text(data["last_seen"]);
+                }
+            });
+
+            request.fail(function() {
+              error_div.fadeIn(1000);
+            })
+        });
+    $.getJSON('https://api.ipify.org?format=json', function(data) {
+        $('[name=ip_address]').val(data.ip);
+    });
+    });
+    </script>
+</body>
+</html>
