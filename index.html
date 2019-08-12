@@ -10,7 +10,7 @@
   <link href="https://fonts.gstatic.com" rel="preconnect" crossorigin>
 <!--  <link rel="dns-prefetch" href="https://api.ipify.org">-->
 <!--  <link href="https://api.ipify.org" rel="preconnect" crossorigin>-->
-  <link rel="preload" href="https://api.ipify.org?format=json" as="fetch" crossorigin="anonymous">
+  <link rel="preload" href="https://api.ipify.org?format=json" as="json" type="application/json" crossorigin="anonymous">
   <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
   <link href="https://cdnjs.cloudflare.com" rel="preconnect" crossorigin>
   <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
@@ -55,12 +55,13 @@
             var $form = $(this);
             var ip_address = $form.find('input[name="ip_address"]').val();
             var url = $form.attr('action') + '/' + ip_address;
+            error_div.fadeOut(1000);
              $('#preloader').fadeIn(1000);
             $.get(url, function() {
 
             })
             .done(function(data) {
-              $('#preloader').hide(1000);
+              $('#preloader').fadeOut(1000);
               result_div.fadeIn(1000);
                 var last_seen_date = $("#last_seen");
                 last_seen_date.empty();
@@ -89,55 +90,12 @@
                 }
             })
             .fail(function() {
-              $('#preloader').hide(1000);
+              $('#preloader').fadeOut(1000);
               error_div.fadeIn(1000);
             })
             .always(function() {
             });
 
-
-            // var request = $.ajax({
-            //   url: url,
-            //   beforeSend: function() {
-            //       $('#preloader').fadeIn(1000);
-            //   },
-            //   complete: function() {
-            //       $('#preloader').hide();
-            //   }
-            // });
-
-            // request.done(function(data) {
-            //     result_div.fadeIn(1000);
-            //     var last_seen_date = $("#last_seen");
-            //     last_seen_date.empty();
-            //     var online_number = $("#online_number");
-            //     online_number.empty();
-            //     var nodes_div = $("#nodes");
-            //     nodes_div.empty();
-            //     if (data["nodes"].length === 0) {
-            //       online_number.text("0");
-            //       if (!data["last_seen"]) {
-            //         last_seen_date.text("Never");
-            //         nodes_div.html("Not found. <a href='https://shop.acrylminer.com/?utm_source=checknodes' target='_blank'><b>Buy Acryl Node</b></a>");
-            //       } else {
-            //         last_seen_date.text(data["last_seen"]);
-            //       }
-            //
-            //     } else {
-            //         online_number.text(data["nodes"].length);
-            //         var node_list = $('<ul id="nodes_list"/>');
-            //         $.each(data["nodes"], function (node) {
-            //               node_list.append($('<li/>').text($(this)[0]["node_address"]));
-            //             }
-            //         );
-            //         nodes_div.append(node_list);
-            //         last_seen_date.text(data["last_seen"]);
-            //     }
-            // });
-            //
-            // request.fail(function() {
-            //   error_div.fadeIn(1000);
-            // })
         });
     $.getJSON('https://api.ipify.org?format=json', function(data) {
         $('[name=ip_address]').val(data.ip);
